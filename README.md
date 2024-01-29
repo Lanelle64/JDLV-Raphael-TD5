@@ -1,28 +1,28 @@
 # JDLV-Raphael-TD5
- Jeu de la vie avec paramètres personnalisables (plusieurs populations, tailles, etc.)
+Conway's Game of Life with customizable parameters (multiple populations, sizes, etc.)
 
-## Fonctionalités:
-Plusieurs populations peuvent être créées pour un meme JDLV et combattent pour leur territoire ! 
+## Features:
+Multiple populations can be created for the same Game of Life, competing for their territory!
 
-Paramètres personalisables comme la taille du board, le nombre et la taille des populations etc.
+Customizable parameters such as board size, number and size of populations, etc.
 
 ## Setup/Troubleshoot
-Simplement clonez ce github et lancez JDLV.py! Pour le lancer ouvrez le fichier sur VS Code ou lancez le depuis le terminal avec:
+Simply clone this GitHub repository and run JDLV.py! To run it, open the file in VS Code or execute it from the terminal with:
 `python3 {path_to_file}\JDLV.py`
 
-Si cela ne marche pas, assurez vous d'avoir la librairie `numpy` ou installez la avec `pip install numpy`
+If it doesn't work, make sure you have the `numpy` library installed or install it with `pip install numpy`
 
-## Additions et Améliorations possibles
-- Ajouter une interface visuelle, avec GUI par exemple
-- Ameliorer la présentation, en affichant un titre en ASCII et en donnant un format aux questions
-- Clear la console a chaque génération pour une meilleure 'animation'
-- Ajouter des couleurs pour les différentes populations
-- Ajouter de nouvelles fonctionnalités!
+## Possible Additions and Improvements
+- Add a visual interface, such as a GUI
+- Improve the presentation by displaying an ASCII title and formatting questions
+- Clear the console at each generation for better 'animation'
+- Add colors for different populations
+- Introduce new features!
 
 ## Authors
-Raphael Michon - Base du projet
+Raphael Michon - Project base
 
-*Ajoutez votre nom ici avec votre contribution*
+*Add your name here with your contribution*
 
 ## License
 This project is licensed under the MIT License - see the [License file](LICENSE) for details
