@@ -12,6 +12,13 @@ Simplement clonez ce github et lancez JDLV.py! Pour le lancer ouvrez le fichier 
 
 Si cela ne marche pas, assurez vous d'avoir la librairie `numpy` ou installez la avec `pip install numpy`
 
+## Additions et Améliorations possibles
+- Ajouter une interface visuelle, avec GUI par exemple
+- Ameliorer la présentation, en affichant un titre en ASCII et en donnant un format aux questions
+- Clear la console a chaque génération pour une meilleure 'animation'
+- Ajouter des couleurs pour les différentes populations
+- Ajouter de nouvelles fonctionnalités!
+
 ## Authors
 Raphael Michon - Base du projet
 
