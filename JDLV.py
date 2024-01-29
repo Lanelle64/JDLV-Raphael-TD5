@@ -23,7 +23,7 @@ def voisinage(grille, num_pop, i, j, rang): # calcule le nombre de voisins
             nb_voisins = depassement_tableau(grille, num_pop, nb_voisins, l, c)
     return nb_voisins
 
-def fin_gen_transition(grille, num_pop):
+def fin_gen_transition(grille, num_pop): # met fin aux états intermediaires (met tout en vivant (1) et mort(0))
     for i in range(grille.shape[0]):
         for j in range(grille.shape[1]):
             if grille[i, j] == num_pop * 10 + 2:
@@ -31,7 +31,7 @@ def fin_gen_transition(grille, num_pop):
             elif grille[i, j] == num_pop * 10 + 3:
                 grille[i, j] = 0
 
-def regle4b(grille, pop_totale, num_pop, i, j):
+def regle4b(grille, pop_totale, num_pop, i, j): # vérifie la règle 4b (si une cellule doit naitre ou non)
     exception = False
     for n_pop in range(len(pop_totale)):
         nb_voisins = voisinage(grille, n_pop, i, j, 1)
@@ -52,7 +52,7 @@ def regle4b(grille, pop_totale, num_pop, i, j):
     if grille[i, j] == 0 and not exception:
         grille[i, j] = num_pop * 10 + 2
 
-def generation_sup(grille, pop_totale, test_fin):
+def generation_sup(grille, pop_totale, test_fin): # calcule et fait passer a la generation suivante
     populations = np.zeros_like(pop_totale)
     for num_pop in range(len(pop_totale)):
         fin_gen_transition(grille, num_pop)
@@ -74,7 +74,7 @@ def generation_sup(grille, pop_totale, test_fin):
         test_fin[1][i] = pop_totale[i]
         pop_totale[i] = populations[i]
 
-def initialisation(grille, pop_totale, test_fin, taux_dep):
+def initialisation(grille, pop_totale, test_fin, taux_dep): # initialise la grille avec les populations
     grille.fill(0)
     nb_cell_dep = round(grille.size * taux_dep)
     nb_cell_dep //= len(pop_totale)
@@ -93,7 +93,7 @@ def initialisation(grille, pop_totale, test_fin, taux_dep):
         test_fin[1][pop] = nb_cell_dep
         pop += 1
 
-def afficher_grille(grille, visu, pop_totale, generation):
+def afficher_grille(grille, visu, pop_totale, generation): # affiche la grille dans le terminal
     for i in range(grille.shape[0]):
         for j in range(grille.shape[1]):
             if grille[i, j] == 0 or grille[i, j] % 10 == 3:
