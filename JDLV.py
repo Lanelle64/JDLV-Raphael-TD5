@@ -1,146 +1,157 @@
 import numpy as np
 import random
 import time
+from colorama import Fore, Style, init
 
-def test_final(test_fin, pop_totale): # pseudo-stabilisation ou non ?
+init(autoreset=True)
+
+def final_test(test_fin, pop_total):
     fin = True
-    for i in range(len(pop_totale)): # on teste si il s'agit de la même valeur qu'il y a 2 générations
-        if test_fin[0][i] != pop_totale[i] or test_fin[1][i] != pop_totale[i]:
+    for i in range(len(pop_total)):
+        if test_fin[0][i] != pop_total[i] or test_fin[1][i] != pop_total[i]:
             fin = False
     return fin
 
-def depassement_tableau(grille, num_pop, nb_voisins, l, c): # determine si la cellule est vivante pares avoir corrige la position
-    l = (l % grille.shape[0] + grille.shape[0]) % grille.shape[0]
-    c = (c % grille.shape[1] + grille.shape[1]) % grille.shape[1]
-    if grille[l, c] == num_pop * 10 + 1 or grille[l, c] == num_pop * 10 + 3:
-        nb_voisins += 1
-    return nb_voisins
+def array_overflow(grid, num_pop, neighbors, l, c): 
+    l = (l % grid.shape[0] + grid.shape[0]) % grid.shape[0]
+    c = (c % grid.shape[1] + grid.shape[1]) % grid.shape[1]
+    if grid[l, c] == num_pop * 10 + 1 or grid[l, c] == num_pop * 10 + 3:
+        neighbors += 1
+    return neighbors
 
-def voisinage(grille, num_pop, i, j, rang): # calcule le nombre de voisins
-    nb_voisins = 0
+def neighborhood(grid, num_pop, i, j, rang): 
+    neighbors = 0
     for l in range(i - rang, i + rang + 1):
         for c in range(j - rang, j + rang + 1):
-            nb_voisins = depassement_tableau(grille, num_pop, nb_voisins, l, c)
-    return nb_voisins
+            neighbors = array_overflow(grid, num_pop, neighbors, l, c)
+    return neighbors
 
-def fin_gen_transition(grille, num_pop): # met fin aux états intermediaires (met tout en vivant (1) et mort(0))
-    for i in range(grille.shape[0]):
-        for j in range(grille.shape[1]):
-            if grille[i, j] == num_pop * 10 + 2:
-                grille[i, j] = num_pop * 10 + 1
-            elif grille[i, j] == num_pop * 10 + 3:
-                grille[i, j] = 0
+def end_gen_transition(grid, num_pop):
+    for i in range(grid.shape[0]):
+        for j in range(grid.shape[1]):
+            if grid[i, j] == num_pop * 10 + 2:
+                grid[i, j] = num_pop * 10 + 1
+            elif grid[i, j] == num_pop * 10 + 3:
+                grid[i, j] = 0
 
-def regle4b(grille, pop_totale, num_pop, i, j): # vérifie la règle 4b (si une cellule doit naitre ou non)
+def rule_4b(grid, total_population, num_pop, i, j): 
     exception = False
-    for n_pop in range(len(pop_totale)):
-        nb_voisins = voisinage(grille, n_pop, i, j, 1)
-        if n_pop != num_pop and nb_voisins == 3:
-            nb_voisins1 = voisinage(grille, n_pop, i, j, 2)
-            nb_voisins2 = voisinage(grille, num_pop, i, j, 2)
-            if nb_voisins1 == nb_voisins2:
-                if pop_totale[n_pop] > pop_totale[num_pop]:
-                    grille[i, j] = n_pop * 10 + 2
-                elif pop_totale[n_pop] < pop_totale[num_pop]:
-                    grille[i, j] = num_pop * 10 + 2
+    for n_pop in range(len(total_population)):
+        neighbors = neighborhood(grid, n_pop, i, j, 1)
+        if n_pop != num_pop and neighbors == 3:
+            neighbors1 = neighborhood(grid, n_pop, i, j, 2)
+            neighbors2 = neighborhood(grid, num_pop, i, j, 2)
+            if neighbors1 == neighbors2:
+                if total_population[n_pop] > total_population[num_pop]:
+                    grid[i, j] = n_pop * 10 + 2
+                elif total_population[n_pop] < total_population[num_pop]:
+                    grid[i, j] = num_pop * 10 + 2
                 else:
                     exception = True
-            elif nb_voisins1 > nb_voisins2:
-                grille[i, j] = n_pop * 10 + 2
+            elif neighbors1 > neighbors2:
+                grid[i, j] = n_pop * 10 + 2
             else:
-                grille[i, j] = num_pop * 10 + 2
-    if grille[i, j] == 0 and not exception:
-        grille[i, j] = num_pop * 10 + 2
+                grid[i, j] = num_pop * 10 + 2
+    if grid[i, j] == 0 and not exception:
+        grid[i, j] = num_pop * 10 + 2
 
-def generation_sup(grille, pop_totale, test_fin): # calcule et fait passer a la generation suivante
-    populations = np.zeros_like(pop_totale)
-    for num_pop in range(len(pop_totale)):
-        fin_gen_transition(grille, num_pop)
-        for i in range(grille.shape[0]):
-            for j in range(grille.shape[1]):
-                if grille[i, j] == num_pop * 10 + 1:
-                    nb_voisins = voisinage(grille, num_pop, i, j, 1)
-                    nb_voisins -= 1
-                    if nb_voisins < 2 or nb_voisins > 3:
-                        grille[i, j] = num_pop * 10 + 3
-                if grille[i, j] == 0:
-                    nb_voisins = voisinage(grille, num_pop, i, j, 1)
-                    if nb_voisins == 3:
-                        regle4b(grille, pop_totale, num_pop, i, j)
-                if grille[i, j] == num_pop * 10 + 1 or grille[i, j] == num_pop * 10 + 2:
+def next_generation(grid, total_population, test_fin):
+    populations = np.zeros_like(total_population)
+    for num_pop in range(len(total_population)):
+        end_gen_transition(grid, num_pop)
+        for i in range(grid.shape[0]):
+            for j in range(grid.shape[1]):
+                if grid[i, j] == num_pop * 10 + 1:
+                    neighbors = neighborhood(grid, num_pop, i, j, 1)
+                    neighbors -= 1
+                    if neighbors < 2 or neighbors > 3:
+                        grid[i, j] = num_pop * 10 + 3
+                if grid[i, j] == 0:
+                    neighbors = neighborhood(grid, num_pop, i, j, 1)
+                    if neighbors == 3:
+                        rule_4b(grid, total_population, num_pop, i, j)
+                if grid[i, j] == num_pop * 10 + 1 or grid[i, j] == num_pop * 10 + 2:
                     populations[num_pop] += 1
     for i in range(len(populations)):
         test_fin[0][i] = test_fin[1][i]
-        test_fin[1][i] = pop_totale[i]
-        pop_totale[i] = populations[i]
+        test_fin[1][i] = total_population[i]
+        total_population[i] = populations[i]
 
-def initialisation(grille, pop_totale, test_fin, taux_dep): # initialise la grille avec les populations
-    grille.fill(0)
-    nb_cell_dep = round(grille.size * taux_dep)
-    nb_cell_dep //= len(pop_totale)
+def initialization(grid, total_population, test_fin, fill_rate):
+    grid.fill(0)
+    nb_cell_dep = round(grid.size * fill_rate)
+    nb_cell_dep //= len(total_population)
     pop = 0
-    for i in range(0, len(pop_totale) * 10, 10):
-        rand_colonne = 0
-        rand_ligne = 0
+    for i in range(0, len(total_population) * 10, 10):
+        rand_column = 0
+        rand_row = 0
         for j in range(nb_cell_dep):
             while True:
-                rand_ligne = random.randint(0, grille.shape[0] - 1)
-                rand_colonne = random.randint(0, grille.shape[1] - 1)
-                if grille[rand_ligne, rand_colonne] == 0:
+                rand_row = random.randint(0, grid.shape[0] - 1)
+                rand_column = random.randint(0, grid.shape[1] - 1)
+                if grid[rand_row, rand_column] == 0:
                     break
-            grille[rand_ligne, rand_colonne] = i + 1
-        pop_totale[pop] = nb_cell_dep
+            grid[rand_row, rand_column] = i + 1
+        total_population[pop] = nb_cell_dep
         test_fin[1][pop] = nb_cell_dep
         pop += 1
 
-def afficher_grille(grille, visu, pop_totale, generation): # affiche la grille dans le terminal
-    for i in range(grille.shape[0]):
-        for j in range(grille.shape[1]):
-            if grille[i, j] == 0 or grille[i, j] % 10 == 3:
-                if grille[i, j] % 10 == 3 and visu:
-                    print("*", end=" ")
+def display_title():
+    print(Fore.BLUE + "=====================================")
+    print(Fore.RED + "     Game of Life with Populations    ")
+    print(Fore.BLUE + "=====================================" + Style.RESET_ALL)
+
+def display_grid(grid, visu, total_population, generation):
+    print()
+    for i in range(grid.shape[0]):
+        for j in range(grid.shape[1]):
+            if grid[i, j] == 0 or grid[i, j] % 10 == 3:
+                if grid[i, j] % 10 == 3 and visu:
+                    print(Fore.YELLOW + "*", end=" ")
                 else:
                     print(".", end=" ")
-            elif grille[i, j] % 10 == 1 or grille[i, j] % 10 == 2:
-                if grille[i, j] % 10 == 2 and visu:
-                    print("-", end=" ")
+            elif grid[i, j] % 10 == 1 or grid[i, j] % 10 == 2:
+                if grid[i, j] % 10 == 2 and visu:
+                    print(Fore.RED + "-", end=" ")
                 else:
-                    print("#", end=" ")
+                    print(Fore.GREEN + "#", end=" ")
         print()
+
     if visu:
-        print(" T" + str(generation) + "+")
+        print(Fore.BLUE + " T" + str(generation) + "+" + Style.RESET_ALL)
         print()
-        afficher_grille(grille, False, pop_totale, generation)
+        display_grid(grid, False, total_population, generation)
     else:
         generation += 1
-        print(" T" + str(generation), end="")
-        for i in range(1, len(pop_totale) + 1):
-            print(" / Pop " + str(i) + ": " + str(pop_totale[i - 1]), end="")
-        print()
+        print(Fore.BLUE + " T" + str(generation), end="")
+        for i in range(1, len(total_population) + 1):
+            print(Fore.GREEN + " / Pop " + str(i) + ": " + str(total_population[i - 1]), end="")
+        print(Style.RESET_ALL)
         print()
 
 def main():
-    print("Combien de lignes?")
-    n_ligne = int(input())
-    print("Combien de colonnes?")
-    n_colonne = int(input())
-    print("Combien de populations?")
-    nb_pop = int(input())
-    print("Quel taux de remplissage de cellules au départ? (entre 0.1 et 0.9)")
-    taux_dep = float(input())
-    print("Jeu avec ou sans visualisation des états futurs? (True-avec False-sans)")
-    visu = bool(input())
+    display_title()
 
-    grille = np.zeros((n_ligne, n_colonne), dtype=int)
+    n_row = int(input("How many rows? "))
+    n_column = int(input("How many columns? "))
+    nb_pop = int(input("How many populations? "))
+    fill_rate = float(input("Initial cell fill rate? (between 0.1 and 0.9) "))
+    visu_str = input("Game with future state visualization? (True/False) ")
+    visu = visu_str.lower() == 'true'
+
+    grid = np.zeros((n_row, n_column), dtype=int)
     generation = 0
-    pop_totale = np.zeros(nb_pop, dtype=int)
-    test_fin = np.zeros((2, nb_pop), dtype=int)
-    initialisation(grille, pop_totale, test_fin, taux_dep)
-    afficher_grille(grille, False, pop_totale, generation)
-    while not test_final(test_fin, pop_totale):
+    total_population = np.zeros(nb_pop, dtype=int)
+    test_fin = np.zeros((2, nb_pop),
+
+ dtype=int)
+    initialization(grid, total_population, test_fin, fill_rate)
+    display_grid(grid, False, total_population, generation)
+
+    while not final_test(test_fin, total_population):
         time.sleep(1)
-        generation_sup(grille, pop_totale, test_fin)
-        afficher_grille(grille, visu, pop_totale, generation)
+        next_generation(grid, total_population, test_fin)
+        display_grid(grid, visu, total_population, generation)
         generation += 1
 
 if __name__ == "__main__":
