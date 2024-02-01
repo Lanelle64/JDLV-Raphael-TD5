@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import time
+import os
 from colorama import Fore, Style, init
 
 init(autoreset=True)
@@ -100,6 +101,7 @@ def display_title():
     print(Fore.BLUE + "=====================================")
     print(Fore.RED + "     Game of Life with Populations    ")
     print(Fore.BLUE + "=====================================" + Style.RESET_ALL)
+    print("Please provide the following information:\n")
 
 def display_grid(grid, visu, total_population, generation):
     print()
@@ -120,7 +122,6 @@ def display_grid(grid, visu, total_population, generation):
     if visu:
         print(Fore.BLUE + " T" + str(generation) + "+" + Style.RESET_ALL)
         print()
-        display_grid(grid, False, total_population, generation)
     else:
         generation += 1
         print(Fore.BLUE + " T" + str(generation), end="")
@@ -129,29 +130,61 @@ def display_grid(grid, visu, total_population, generation):
         print(Style.RESET_ALL)
         print()
 
+def get_valid_input(prompt, validation_func):
+    while True:
+        user_input = input(prompt)
+        if validation_func(user_input):
+            return user_input
+        else:
+            os.system('cls')
+            print("Invalid entry. Please try again.")
+
+def validate_positive_integer(value):
+    try:
+        int_value = int(value)
+        return int_value > 0
+    except ValueError:
+        return False
+    
+def validate_population(value, num_rows, num_cols):
+    try:
+        int_value = int(value)
+        max_population = num_rows * num_cols
+        return 0 < int_value <= max_population
+    except ValueError:
+        return False
+
+def validate_fill_rate(value):
+    try:
+        float_value = float(value)
+        return 0.1 <= float_value <= 0.9
+    except ValueError:
+        return False
+    
 def main():
     display_title()
+    n_row = int(get_valid_input("How many rows for the grid? :", validate_positive_integer))
+    n_column = int(get_valid_input("How many columns for the grid? :", validate_positive_integer))
+    nb_pop = int(get_valid_input(f"How many populations? (0 < population <= {n_row*n_column}) :", lambda x: validate_population(x, n_row, n_column)))
+    fill_rate = float(get_valid_input("Initial cell fill rate? (between 0.1 and 0.9) :", validate_fill_rate))
+    visu_str = get_valid_input("Game with future state visualization? (True/False) :", lambda x: x.lower() in ["true", "false"])
+    visu_str = visu_str.capitalize()
+    bool_visu=False
+    if visu_str == 'True':
+        bool_visu=True
 
-    n_row = int(input("How many rows? "))
-    n_column = int(input("How many columns? "))
-    nb_pop = int(input("How many populations? "))
-    fill_rate = float(input("Initial cell fill rate? (between 0.1 and 0.9) "))
-    visu_str = input("Game with future state visualization? (True/False) ")
-    visu = visu_str.lower() == 'true'
 
     grid = np.zeros((n_row, n_column), dtype=int)
     generation = 0
     total_population = np.zeros(nb_pop, dtype=int)
-    test_fin = np.zeros((2, nb_pop),
-
- dtype=int)
+    test_fin = np.zeros((2, nb_pop), dtype=int)
     initialization(grid, total_population, test_fin, fill_rate)
-    display_grid(grid, False, total_population, generation)
+    display_grid(grid, bool_visu, total_population, generation)
 
     while not final_test(test_fin, total_population):
         time.sleep(1)
         next_generation(grid, total_population, test_fin)
-        display_grid(grid, visu, total_population, generation)
+        display_grid(grid, bool_visu, total_population, generation)
         generation += 1
 
 if __name__ == "__main__":
