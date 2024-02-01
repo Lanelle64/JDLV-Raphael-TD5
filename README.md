@@ -10,7 +10,13 @@ Customizable parameters such as board size, number and size of populations, etc.
 Simply clone this GitHub repository and run JDLV.py! To run it, open the file in VS Code or execute it from the terminal with:
 `python3 {path_to_file}\JDLV.py`
 
-If it doesn't work, make sure you have the `numpy` library installed or install it with `pip install numpy`
+Install the required dependencies:
+```
+pip install numpy
+```
+```
+pip install colorama
+```
 
 ## Possible Additions and Improvements
 - Add a visual interface, such as a GUI
