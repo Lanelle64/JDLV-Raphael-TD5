@@ -20,8 +20,8 @@ If it doesn't work, make sure you have the `numpy` library installed or install 
 - Introduce new features!
 
 ## Authors
-Raphael Michon - Project base
-
+Raphael Michon - Base Project
+Emma K - Documentation, Translation
 *Add your name here with your contribution*
 
 ## License
