@@ -1,5 +1,5 @@
 # JDLV-Raphael-TD5
-Conway's Game of Life, also known as Conway's Life, is a cellular automaton invented by the British mathematician John Horton Conway. It is a playerless game that takes place on a two-dimensional grid composed of cells. Each cell can be in one of two states: alive or dead.
+[Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life), also known as Conway's Life, is a cellular automaton invented by the British mathematician John Horton Conway. It is a playerless game that takes place on a two-dimensional grid composed of cells. Each cell can be in one of two states: alive or dead.
 
 The rules of the game are simple:
 
@@ -36,8 +36,9 @@ pip install colorama
 - Introduce new features!
 
 ## Authors
-Raphael Michon - Base Project
-Emma K - Documentation, Translation
+Raphael Michon - Base Project    
+Emma K - Documentation, Translation    
+Seb Moine - Enhancement, bug fix    
 *Add your name here with your contribution*
 
 ## License
